@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Term Relation</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        async function addRelation(event) {
+        event.preventDefault();
+
+        const termFrom = document.getElementById('term_from').value;
+        const termTo = document.getElementById('term_to').value;
+        const label = document.getElementById('label').value;
+
+        const response = await fetch('/add_relation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ term_from: termFrom, term_to: termTo, label: label }),
+        });
+
+        if (response.ok) {
+            alert('Relation added successfully!');
+        } else {
+            const error = await response.json();
+            alert(`Error adding relation: ${error.detail}`);
+        }
+    }
+    </script>
+</head>
+<body>
+    <h1>Add Relation Between Terms</h1>
+    <form onsubmit="addRelation(event)">
+        <label for="term_from">Term From:</label>
+        <select name="term_from" id="term_from">
+            {% for term in terms %}
+                <option value="{{ term.term }}">{{ term.term }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="term_to">Term To:</label>
+        <select name="term_to" id="term_to">
+            {% for term in terms %}
+                <option value="{{ term.term }}">{{ term.term }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="label">Label (описание связи):</label>
+        <input type="text" id="label" name="label" required>
+        <br>
+        <button type="submit">Add Relation</button>
+    </form>
+    <br>
+    <a href="/graph">Back to Graph</a>
+</body>
+</html>
